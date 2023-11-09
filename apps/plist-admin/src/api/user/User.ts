@@ -1,4 +1,5 @@
 import { JsonValue } from "type-fest";
+import { Track } from "../track/Track";
 
 export type User = {
   createdAt: Date;
@@ -6,6 +7,7 @@ export type User = {
   id: string;
   lastName: string | null;
   roles: JsonValue;
+  tracks?: Array<Track>;
   updatedAt: Date;
   username: string;
 };

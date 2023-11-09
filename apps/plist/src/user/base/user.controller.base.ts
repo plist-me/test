@@ -27,6 +27,9 @@ import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
 import { UserFindManyArgs } from "./UserFindManyArgs";
 import { UserUpdateInput } from "./UserUpdateInput";
 import { User } from "./User";
+import { TrackFindManyArgs } from "../../track/base/TrackFindManyArgs";
+import { Track } from "../../track/base/Track";
+import { TrackWhereUniqueInput } from "../../track/base/TrackWhereUniqueInput";
 
 @swagger.ApiBearerAuth()
 @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
@@ -199,5 +202,107 @@ export class UserControllerBase {
       }
       throw error;
     }
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @common.Get("/:id/tracks")
+  @ApiNestedQuery(TrackFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "Track",
+    action: "read",
+    possession: "any",
+  })
+  async findManyTracks(
+    @common.Req() request: Request,
+    @common.Param() params: UserWhereUniqueInput
+  ): Promise<Track[]> {
+    const query = plainToClass(TrackFindManyArgs, request.query);
+    const results = await this.service.findTracks(params.id, {
+      ...query,
+      select: {
+        createdAt: true,
+        id: true,
+        name: true,
+        updatedAt: true,
+
+        user: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        `No resource was found for ${JSON.stringify(params)}`
+      );
+    }
+    return results;
+  }
+
+  @common.Post("/:id/tracks")
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
+  async connectTracks(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: TrackWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      tracks: {
+        connect: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Patch("/:id/tracks")
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
+  async updateTracks(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: TrackWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      tracks: {
+        set: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Delete("/:id/tracks")
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
+  async disconnectTracks(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: TrackWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      tracks: {
+        disconnect: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
   }
 }

@@ -9,6 +9,14 @@ import { UserList } from "./user/UserList";
 import { UserCreate } from "./user/UserCreate";
 import { UserEdit } from "./user/UserEdit";
 import { UserShow } from "./user/UserShow";
+import { TrackList } from "./track/TrackList";
+import { TrackCreate } from "./track/TrackCreate";
+import { TrackEdit } from "./track/TrackEdit";
+import { TrackShow } from "./track/TrackShow";
+import { ArtistList } from "./artist/ArtistList";
+import { ArtistCreate } from "./artist/ArtistCreate";
+import { ArtistEdit } from "./artist/ArtistEdit";
+import { ArtistShow } from "./artist/ArtistShow";
 import { jwtAuthProvider } from "./auth-provider/ra-auth-jwt";
 
 const App = (): React.ReactElement => {
@@ -41,6 +49,20 @@ const App = (): React.ReactElement => {
           edit={UserEdit}
           create={UserCreate}
           show={UserShow}
+        />
+        <Resource
+          name="Track"
+          list={TrackList}
+          edit={TrackEdit}
+          create={TrackCreate}
+          show={TrackShow}
+        />
+        <Resource
+          name="Artist"
+          list={ArtistList}
+          edit={ArtistEdit}
+          create={ArtistCreate}
+          show={ArtistShow}
         />
       </Admin>
     </div>
